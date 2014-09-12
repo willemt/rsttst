@@ -6,7 +6,8 @@ Below is an example:
 
 2 + 2 = 4
 ---------
-The title "2 + 2 = 4" becomes the test name after being converterd to a
+
+The title "2 + 2 = 4" becomes the test name after being converted to a
 Python friendly identifier (ie. 2_plus_2_equals_4).
 
 The bash code in the below code block will be run...
@@ -85,4 +86,5 @@ Note: we had to exclude test_running_pytest, otherwise it's turtles all the way 
 
 Functionality
 -------------
+
 Right now rsttst only supports bash testing.
