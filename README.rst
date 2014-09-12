@@ -36,7 +36,7 @@ Here's how we generate the Python test code:
 
 The resulting test code looks like the following:
 
-.. code-block:: bash
+.. code-block:: python
 
   import pytest
   import os
