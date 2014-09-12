@@ -22,6 +22,8 @@ The bash code in the below code block will be run...
 
    4
 
+The test fails if the stdout doesn't match the block above.
+
 Generating tests
 ----------------
 
@@ -65,14 +67,14 @@ The resulting test code looks like the following:
   def run(cmd):
       os.system(cmd)
 
-Running py.test
----------------
+Running the tests
+-----------------
 
 .. code-block:: bash
 
-   py.test -k 'not test_running_pytest' | grep -v seconds
+   py.test -k 'not test_running_the_tests' | grep -v seconds
 
-Note: we had to exclude test_running_pytest, otherwise it's turtles all the way down.
+Note: we had to exclude 'test_running_the_tests', otherwise it's turtles all the way down.
 
 .. code-block:: bash
 
@@ -82,7 +84,7 @@ Note: we had to exclude test_running_pytest, otherwise it's turtles all the way 
            
            test_readme.py ..
            
-           ============== 1 tests deselected by '-knot test_running_pytest' ===============
+           ============= 1 tests deselected by '-knot test_running_the_tests' =============
 
 Functionality
 -------------
