@@ -22,7 +22,7 @@ The bash code in the below code block will be run...
 
    4
 
-The test fails if the stdout doesn't match the block above.
+The test fails if stdout doesn't match the block above.
 
 Generating tests
 ----------------
