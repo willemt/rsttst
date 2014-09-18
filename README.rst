@@ -14,7 +14,7 @@ The bash code in the below code block will be run...
 
 .. code-block:: bash
 
-   echo "2 + 2" | bc
+   echo '2 + 2' | bc
 
 ...and the resulting stdout will be compared to the following code block:
 
@@ -46,7 +46,7 @@ The resulting test code looks like the following:
        return subprocess.check_output(cmd, shell=True)
   
    def test_2_plus_2_equals_4():
-       output = run(u"""echo "2 + 2" | bc""")
+       output = run(u"""echo '2 + 2' | bc""")
        assert output == u"""4
    """
    
