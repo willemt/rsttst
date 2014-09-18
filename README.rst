@@ -60,14 +60,13 @@ Running the tests
 
 .. code-block:: bash
 
-   py.test -k 'not test_running_the_tests' | grep -v seconds
+   py.test -k 'not test_running_the_tests' | grep -v seconds | grep -v platform
 
 Note: we had to exclude 'test_running_the_tests', otherwise it's turtles all the way down.
 
 .. code-block:: bash
 
            ============================= test session starts ==============================
-           platform darwin -- Python 2.7.7 -- py-1.4.20 -- pytest-2.5.2
            collected 3 items
            
            test_readme.py ..

@@ -1,3 +1,3 @@
 language: python
 script:
-  - pip install docutils pygments pytest && ./rsttst README.rst && py.test .
+    - pip install docutils pygments pytest && ./rsttst README.rst && py.test -vv .
