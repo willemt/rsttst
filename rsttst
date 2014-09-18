@@ -3,10 +3,10 @@
 # Copyright: Willem Thiart 2014
 
 import locale
-import sys
 import re
 from docutils import nodes, writers
 from docutils.core import publish_cmdline, default_description
+import codecs
 
 try:
     locale.setlocale(locale.LC_ALL, '')
@@ -30,29 +30,27 @@ class RstTstWriter(writers.Writer):
         visitor = self.translator_class(self.document)
         self.document.walkabout(visitor)
         self.output = visitor.astext()
-        out = open('test_{0}.py'.format(sys.argv[1].lower().replace('.rst', '')), 'w')
-        out.write("""import pytest
-import os
+        filename = 'test_{0}.py'.format(self.document.settings._source.lower().replace('.rst', ''))
+        out = codecs.open(filename, 'w', 'utf-8')
+        out.write(u"""# -*- coding: utf-8 -*-
 import subprocess
-import sys
-import shlex
 
 def run(cmd):
-    os.system(cmd)
-
+    return subprocess.check_output(cmd, shell=True)
 
 """)
         for i, block in enumerate(visitor.blocks):
             title = i
             if hasattr(block, 'title'):
                 title = block.title
-            out.write('def test_{0}(capfd):\n'.format(title))
-            for line in block.input.astext().splitlines():
-                out.write('    run("""{0}""")\n'.format(line))
-            text = block.output.astext().replace('"""', '\\"\\"\\"')
-            out.write('    assert capfd.readouterr()[0] == """{0}\n"""\n'.format(text))
-            out.write('\n')
-        out.write('if __name__ == "__main__": pass\n')
+            out.write(u'def test_{0}():\n'.format(title))
+            out.write(u'    output = run(u"""{0}""")\n'.format(block.input.astext()))
+            text = block.output.astext()
+            text = text.replace('\\', '\\\\')
+            text = text.replace('"""', '\\"""').strip()
+            out.write(u'    assert output == u"""{0}\n"""\n'.format(text))
+            out.write(u'\n')
+        out.write(u'if __name__ == "__main__": pass\n')
 
 
 class Block(object):
@@ -64,7 +62,7 @@ class Translator(nodes.NodeVisitor):
 
     words_and_spaces = re.compile(r'\S+| +|\n')
     possibly_a_roff_command = re.compile(r'\.\w')
-    document_start = """Man page generated from reStructuredText."""
+    document_start = """Tests generated from reStructuredText."""
 
     def __init__(self, document):
         nodes.NodeVisitor.__init__(self, document)

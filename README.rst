@@ -28,44 +28,32 @@ Generating tests
 ----------------
 
 Under the hood rsttst generates Python code which is executable with py.test.
-
 Here's how we generate the Python test code:
 
 .. code-block:: bash
 
    ./rsttst README.rst
-   cat test_readme.py | head -n 26 # use head, otherwise it's turtles all the way down
+   cat test_readme.py | head -n 14
 
 The resulting test code looks like the following:
 
-.. code-block:: python
+.. code-block:: bash
 
-  import pytest
-  import os
-  import subprocess
-  import sys
-  import shlex
+   # -*- coding: utf-8 -*-
+   import subprocess
   
-  def run(cmd):
-      os.system(cmd)
+   def run(cmd):
+       return subprocess.check_output(cmd, shell=True)
   
-  
-  def test_2_plus_2_equals_4(capfd):
-      run("""echo "2 + 2" | bc""")
-      assert capfd.readouterr()[0] == """4
-  """
-  
-  def test_generating_tests(capfd):
-      run("""./rsttst README.rst""")
-      run("""cat test_readme.py | head -n 26 # use head, otherwise it\'s turtles all the way down""")
-      assert capfd.readouterr()[0] == """import pytest
-  import os
-  import subprocess
-  import sys
-  import shlex
-  
-  def run(cmd):
-      os.system(cmd)
+   def test_2_plus_2_equals_4():
+       output = run(u"""echo "2 + 2" | bc""")
+       assert output == u"""4
+   """
+   
+   def test_generating_tests():
+       output = run(u"""./rsttst README.rst
+   cat test_readme.py | head -n 14""")
+
 
 Running the tests
 -----------------
