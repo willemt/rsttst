@@ -5,7 +5,7 @@ In fact, this README file is testable and is used to test rsttst.
 Below is an example:
 
 2 + 2 = 4
----------
+=========
 
 The title "2 + 2 = 4" becomes the test name after being converted to a
 Python friendly identifier (ie. 2_plus_2_equals_4).
@@ -25,7 +25,7 @@ The bash code in the below code block will be run...
 The test fails if stdout doesn't match the block above.
 
 Generating tests
-----------------
+================
 
 Under the hood rsttst generates Python code which is executable with py.test.
 Here's how we generate the Python test code:
@@ -56,7 +56,7 @@ The resulting test code looks like the following:
 
 
 Running the tests
------------------
+=================
 
 .. code-block:: bash
 
@@ -74,6 +74,13 @@ Note: we had to exclude 'test_running_the_tests', otherwise it's turtles all the
            ============= 1 tests deselected by '-knot test_running_the_tests' =============
 
 Functionality
--------------
+=============
 
 Right now rsttst only supports bash testing.
+
+FAQ
+===
+
+Why does pytest throw an "IndexError: list index out of range" exception for my JSON tests?
+-------------------------------------------------------------------------------------------
+Please upgrade to the latest version of pytest

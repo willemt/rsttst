@@ -7,11 +7,23 @@ import re
 from docutils import nodes, writers
 from docutils.core import publish_cmdline, default_description
 import codecs
+import collections
 
 try:
     locale.setlocale(locale.LC_ALL, '')
 except:
     pass
+
+
+def pythonify_title(title):
+    mapping = {
+        '+': 'plus',
+        ' ': '_',
+        '=': 'equals',
+        }
+    for k, v in mapping.iteritems():
+        title = title.replace(k, v)
+    return ''.join(e for e in title if e.isalnum() or e == '_').lower()
 
 
 class RstTstWriter(writers.Writer):
@@ -31,8 +43,8 @@ class RstTstWriter(writers.Writer):
         self.document.walkabout(visitor)
         self.output = visitor.astext()
         filename = 'test_{0}.py'.format(self.document.settings._source.lower().replace('.rst', ''))
-        out = codecs.open(filename, 'w', 'utf-8')
-        out.write(u"""# -*- coding: utf-8 -*-
+        f = codecs.open(filename, 'w', 'utf-8')
+        f.write(u"""# -*- coding: utf-8 -*-
 import subprocess
 
 def run(cmd):
@@ -43,14 +55,15 @@ def run(cmd):
             title = i
             if hasattr(block, 'title'):
                 title = block.title
-            out.write(u'def test_{0}():\n'.format(title))
-            out.write(u'    output = run(u"""{0}""")\n'.format(block.input.astext()))
-            text = block.output.astext()
-            text = text.replace('\\', '\\\\')
-            text = text.replace('"""', '\\"""').strip()
-            out.write(u'    assert output == u"""{0}\n"""\n'.format(text))
-            out.write(u'\n')
-        out.write(u'if __name__ == "__main__": pass\n')
+            f.write(u'def test_{0}():\n'.format(title))
+            text_in = block.input.astext().replace('\\', '\\\\')
+            f.write(u'    output = run(u"""{0}""")\n'.format(text_in))
+            text_out = block.output.astext()
+            text_out = text_out.replace('\\', '\\\\')
+            text_out = text_out.replace('"""', '\\"""').strip()
+            f.write(u'    assert output == u"""{0}\n"""\n'.format(text_out))
+            f.write(u'\n')
+        f.write(u'if __name__ == "__main__": pass\n')
 
 
 class Block(object):
@@ -69,6 +82,7 @@ class Translator(nodes.NodeVisitor):
         self.blocks = []
         self.current_block = None
         self.current_title = None
+        self.titles = collections.defaultdict(lambda: 0)
 
     def astext(self):
         return ''
@@ -387,17 +401,11 @@ class Translator(nodes.NodeVisitor):
             self.current_block = Block()
             self.blocks.append(self.current_block)
             self.current_block.input = node
+
             title = self.current_title
-            mapping = {
-                '+': 'plus',
-                ' ': '_',
-                '=': 'equals',
-                }
-            for k, v in mapping.iteritems():
-                title = title.replace(k, v)
-            title = ''.join(e for e in title if e.isalnum() or e == '_')
-            self.current_block.title = title.lower()
-            self.current_title = None
+
+
+            self.current_block.title = title
         else:
             self.current_block.output = node
             self.current_block = None
@@ -577,8 +585,11 @@ class Translator(nodes.NodeVisitor):
         pass
 
     def visit_title(self, node):
-        self.current_title = node.astext()
-        pass
+        title = pythonify_title(node.astext())
+        self.titles[title] += 1
+        if 1 < self.titles[title]:
+            title = '{0}__{1}'.format(title, self.titles[title])
+        self.current_title = title
 
     def depart_title(self, node):
         pass
@@ -627,3 +638,4 @@ description = ("Generates test code.  " + default_description)
 publish_cmdline(writer=RstTstWriter(), description=description)
 
 # vim: set fileencoding=utf-8 et ts=4 ai :
+
