@@ -1,3 +1,12 @@
+.. image:: https://travis-ci.org/willemt/rsttst.png
+   :target: https://travis-ci.org/willemt/rsttst
+
+.. image:: https://pypip.in/version/rsttst/badge.svg
+    :target: https://pypi.python.org/pypi/rsttst
+    
+.. image:: https://pypip.in/download/rsttst/badge.svg
+    :target: https://pypi.python.org/pypi/rsttst
+
 rsttst makes your reStructuredText documentation testable.
 
 In fact, this README file is testable and is used to test rsttst.
