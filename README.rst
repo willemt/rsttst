@@ -32,7 +32,7 @@ Here's how we generate the Python test code:
 
 .. code-block:: bash
 
-   ./rsttst README.rst
+   rsttst README.rst
    cat test_readme.py | head -n 14
 
 The resulting test code looks like the following:
@@ -43,7 +43,7 @@ The resulting test code looks like the following:
    import subprocess
   
    def run(cmd):
-       return subprocess.check_output(cmd, shell=True)
+       return subprocess.check_output(cmd, shell=True).decode('utf-8')
   
    def test_2_plus_2_equals_4():
        output = run(u"""echo '2 + 2' | bc""")
@@ -51,7 +51,7 @@ The resulting test code looks like the following:
    """
    
    def test_generating_tests():
-       output = run(u"""./rsttst README.rst
+       output = run(u"""rsttst README.rst
    cat test_readme.py | head -n 14""")
 
 

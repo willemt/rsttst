@@ -21,7 +21,7 @@ def pythonify_title(title):
         ' ': '_',
         '=': 'equals',
         }
-    for k, v in mapping.iteritems():
+    for k, v in mapping.items():
         title = title.replace(k, v)
     return ''.join(e for e in title if e.isalnum() or e == '_').lower()
 
@@ -48,7 +48,7 @@ class RstTstWriter(writers.Writer):
 import subprocess
 
 def run(cmd):
-    return subprocess.check_output(cmd, shell=True)
+    return subprocess.check_output(cmd, shell=True).decode('utf-8')
 
 """)
         for i, block in enumerate(visitor.blocks):
@@ -634,8 +634,12 @@ class Translator(nodes.NodeVisitor):
         pass
 
 
-description = ("Generates test code.  " + default_description)
-publish_cmdline(writer=RstTstWriter(), description=description)
+def main():
+    description = ("Generates test code.  " + default_description)
+    publish_cmdline(writer=RstTstWriter(), description=description)
+
+
+if __name__ == '__main__':
+    main()
 
 # vim: set fileencoding=utf-8 et ts=4 ai :
-
