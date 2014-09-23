@@ -633,6 +633,12 @@ class Translator(nodes.NodeVisitor):
     def unimplemented_visit(self, node):
         pass
 
+    def visit_image(self, node):
+        pass
+
+    def depart_image(self, node):
+        pass
+
 
 def main():
     description = ("Generates test code.  " + default_description)
