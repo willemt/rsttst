@@ -81,6 +81,5 @@ Right now rsttst only supports bash testing.
 FAQ
 ===
 
-Why does pytest throw an "IndexError: list index out of range" exception for my JSON tests?
--------------------------------------------------------------------------------------------
+*Why does pytest throw an "IndexError: list index out of range" exception for my JSON tests?*
 Please upgrade to the latest version of pytest
