@@ -357,6 +357,9 @@ class Translator(nodes.NodeVisitor):
     def visit_image(self, node):
         pass
 
+    def depart_image(self, node):
+        pass
+
     def visit_important(self, node):
         pass
 
@@ -631,12 +634,6 @@ class Translator(nodes.NodeVisitor):
         pass
 
     def unimplemented_visit(self, node):
-        pass
-
-    def visit_image(self, node):
-        pass
-
-    def depart_image(self, node):
         pass
 
 
