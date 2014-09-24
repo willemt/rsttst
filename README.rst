@@ -33,6 +33,26 @@ The bash code in the below code block will be run...
 
 The test fails if stdout doesn't match the block above.
 
+Dotted notation
+===============
+
+Sometimes you want to be flexible with the output you accept.
+
+You can use "." and the ":class: dotted" rst directive option to support this.
+
+.. code-block:: bash
+
+   echo Date: $(date)
+   echo ok
+
+The below code block uses the ":class: dotted" option.
+
+.. code-block:: bash
+   :class: dotted
+
+   Date: ............................
+   ok
+
 Generating tests
 ================
 
@@ -42,26 +62,34 @@ Here's how we generate the Python test code:
 .. code-block:: bash
 
    rsttst README.rst
-   cat test_readme.py | head -n 14
+   cat test_readme.py | head -n 22
 
 The resulting test code looks like the following:
 
 .. code-block:: bash
 
    # -*- coding: utf-8 -*-
-   import subprocess
+   import subprocess, rsttst.core
   
    def run(cmd):
-       return subprocess.check_output(cmd, shell=True).decode('utf-8')
+       return subprocess.check_output(cmd, shell=True).decode('utf-8').strip()
   
    def test_2_plus_2_equals_4():
        output = run(u"""echo '2 + 2' | bc""")
-       assert output == u"""4
-   """
+       assert output == u"""4"""
+   
+   def test_dotted_notation():
+       output = run(u"""echo Date: $(date)
+   echo ok""")
+       expected = rsttst.core.Dotted(u"""Date: ............................
+   ok""")
+       cmp(output, expected)
+       expected = str(expected)
+       assert output == expected
    
    def test_generating_tests():
        output = run(u"""rsttst README.rst
-   cat test_readme.py | head -n 14""")
+   cat test_readme.py | head -n 22""")
 
 
 Running the tests
@@ -76,9 +104,9 @@ Note: we had to exclude 'test_running_the_tests', otherwise it's turtles all the
 .. code-block:: bash
 
            ============================= test session starts ==============================
-           collected 3 items
+           collected 4 items
            
-           test_readme.py ..
+           test_readme.py ...
            
            ============= 1 tests deselected by '-knot test_running_the_tests' =============
 
