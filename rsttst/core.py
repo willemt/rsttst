@@ -15,6 +15,49 @@ except:
     pass
 
 
+class Dotted(object):
+    def __init__(self, s):
+        self.s = s
+
+    def __repr__(self):
+        return repr(self.s)
+
+    def __str__(self):
+        return str(self.s)
+
+    def _cmp(self, b):
+        lines = []
+        for a, b in zip(self.s.splitlines(), b.splitlines()):
+            if b:
+                new = u"".join([c2 if c1 == c2 or c1 == '.' else c1 for c1, c2 in zip(a, b)])
+                lines.append(new)
+            else:
+                lines.append(a)
+        self.s = u"\n".join(lines)
+        return cmp(self.s, b)
+
+    def __cmp__(self, other):
+        return self._cmp(other)
+
+    def __lt__(self, other):
+        return self._cmp(other) < 0
+
+    def __le__(self, other):
+        return self._cmp(other) <= 0
+
+    def __eq__(self, other):
+        return self._cmp(other) == 0
+
+    def __ne__(self, other):
+        return self._cmp(other) != 0
+
+    def __gt__(self, other):
+        return 0 < self._cmp(other)
+
+    def __ge__(self, other):
+        return 0 <= self._cmp(other)
+
+
 def pythonify_title(title):
     mapping = {
         '+': 'plus',
@@ -45,10 +88,10 @@ class RstTstWriter(writers.Writer):
         filename = 'test_{0}.py'.format(self.document.settings._source.lower().replace('.rst', ''))
         f = codecs.open(filename, 'w', 'utf-8')
         f.write(u"""# -*- coding: utf-8 -*-
-import subprocess
+import subprocess, rsttst.core
 
 def run(cmd):
-    return subprocess.check_output(cmd, shell=True).decode('utf-8')
+    return subprocess.check_output(cmd, shell=True).decode('utf-8').strip()
 
 """)
         for i, block in enumerate(visitor.blocks):
@@ -61,7 +104,13 @@ def run(cmd):
             text_out = block.output.astext()
             text_out = text_out.replace('\\', '\\\\')
             text_out = text_out.replace('"""', '\\"""').strip()
-            f.write(u'    assert output == u"""{0}\n"""\n'.format(text_out))
+            if 'dotted' in block.classes:
+                f.write(u'    expected = rsttst.core.Dotted(u"""{0}""")\n'.format(text_out))
+                f.write(u'    cmp(output, expected)\n')
+                f.write(u'    expected = str(expected)\n')
+                f.write(u'    assert output == expected\n')
+            else:
+                f.write(u'    assert output == u"""{0}"""\n'.format(text_out))
             f.write(u'\n')
         f.write(u'if __name__ == "__main__": pass\n')
 
@@ -402,14 +451,15 @@ class Translator(nodes.NodeVisitor):
     def visit_literal_block(self, node):
         if not self.current_block:
             self.current_block = Block()
-            self.blocks.append(self.current_block)
             self.current_block.input = node
+            self.blocks.append(self.current_block)
 
             title = self.current_title
 
 
             self.current_block.title = title
         else:
+            self.current_block.classes = node.attributes['classes']
             self.current_block.output = node
             self.current_block = None
 
