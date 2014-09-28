@@ -43,7 +43,7 @@ You can use "." and the ":class: dotted" rst directive option to support this.
 .. code-block:: bash
 
    echo Date: $(date)
-   echo ok
+   echo '\ok'
 
 The below code block uses the ":class: dotted" option.
 
@@ -51,7 +51,22 @@ The below code block uses the ":class: dotted" option.
    :class: dotted
 
    Date: ............................
-   ok
+   \ok
+
+Three dots match in a similiar way to what you'd expect for a regex pattern of ".+" to work:
+
+.. code-block:: bash
+
+   echo '<NZ>'
+   echo $(date "+DATE: %Y-%m-%d%nTIME: %H:%M:%S")
+
+The below code block uses the ":class: dotted" option.
+
+.. code-block:: bash
+   :class: dotted
+
+   <...>
+   DATE: ... TIME: ...
 
 Generating tests
 ================
@@ -62,7 +77,7 @@ Here's how we generate the Python test code:
 .. code-block:: bash
 
    rsttst README.rst
-   cat test_readme.py | head -n 22
+   cat test_readme.py | head -n 31
 
 The resulting test code looks like the following:
 
@@ -70,45 +85,58 @@ The resulting test code looks like the following:
 
    # -*- coding: utf-8 -*-
    import subprocess, rsttst.core
-  
+   
    def run(cmd):
        return subprocess.check_output(cmd, shell=True).decode('utf-8').strip()
-  
+   
    def test_2_plus_2_equals_4():
        output = run(u"""echo '2 + 2' | bc""")
        assert output == u"""4"""
    
    def test_dotted_notation():
        output = run(u"""echo Date: $(date)
-   echo ok""")
+   echo '\\ok'""")
        expected = rsttst.core.Dotted(u"""Date: ............................
-   ok""")
+   \\ok""")
        cmp(output, expected)
-       expected = str(expected)
+       expected = u"{0}".format(expected)
+       assert output == expected
+   
+   def test_dotted_notation__2():
+       output = run(u"""echo '<NZ>'
+   echo $(date "+DATE: %Y-%m-%d%nTIME: %H:%M:%S")""")
+       expected = rsttst.core.Dotted(u"""<...>
+   DATE: ... TIME: ...""")
+       cmp(output, expected)
+       expected = u"{0}".format(expected)
        assert output == expected
    
    def test_generating_tests():
        output = run(u"""rsttst README.rst
-   cat test_readme.py | head -n 22""")
-
+   cat test_readme.py | head -n 31""")
 
 Running the tests
 =================
 
+You could probably use another test runner, but pytest works quite well:
+
 .. code-block:: bash
 
-   py.test -k 'not test_running_the_tests' | grep -v seconds | grep -v platform
+   py.test -k 'not test_running_the_tests' | grep -v seconds
 
 Note: we had to exclude 'test_running_the_tests', otherwise it's turtles all the way down.
 
 .. code-block:: bash
+   :class: dotted
 
-           ============================= test session starts ==============================
-           collected 4 items
+   ============================= test session starts ==============================
+   platform ...
+   collected 5 items
            
-           test_readme.py ...
+   test_readme.py ....
            
-           ============= 1 tests deselected by '-knot test_running_the_tests' =============
+   ============= 1 tests deselected by '-knot test_running_the_tests' =============
+
 
 Functionality
 =============
@@ -119,4 +147,5 @@ FAQ
 ===
 
 *Why does pytest throw an "IndexError: list index out of range" exception for my JSON tests?*
+
 Please upgrade to the latest version of pytest

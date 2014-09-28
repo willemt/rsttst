@@ -26,11 +26,44 @@ class Dotted(object):
         return str(self.s)
 
     def _cmp(self, b):
+        from itertools import izip_longest
         lines = []
-        for a, b in zip(self.s.splitlines(), b.splitlines()):
+        for a, b in izip_longest(self.s.splitlines(), b.splitlines()):
             if b:
-                new = u"".join([c2 if c1 == c2 or c1 == '.' else c1 for c1, c2 in zip(a, b)])
-                lines.append(new)
+                def dotcompare(a, b):
+                    dots = i = j = 0
+                    while True:
+                        try:
+                            c1 = a[i]
+                        except (IndexError, TypeError):
+                            c1 = ''
+
+                        try:
+                            c2 = b[j]
+                        except (IndexError, TypeError):
+                            c2 = ''
+                            if 3 == dots:
+                                i += 1
+
+                        if c1 == '' and c2 == '':
+                            break
+
+                        if c1 == '.':
+                            dots += 1
+                            i += 1
+                        elif c1 == c2 and c1 != '.':
+                            dots = 0
+                            i += 1
+                        elif 3 == dots:
+                            pass
+                        elif c1 != c2:
+                            i += 1
+                            j += 1
+                            yield c1
+                            continue
+                        j += 1
+                        yield c2
+                lines.append(u"".join(dotcompare(a, b)))
             else:
                 lines.append(a)
         self.s = u"\n".join(lines)
@@ -99,15 +132,16 @@ def run(cmd):
             if hasattr(block, 'title'):
                 title = block.title
             f.write(u'def test_{0}():\n'.format(title))
-            text_in = block.input.astext().replace('\\', '\\\\')
+            text_in = block.input.astext()
+            text_in = re.sub(r'\\(\S)', r'\\\\\1', text_in)
             f.write(u'    output = run(u"""{0}""")\n'.format(text_in))
             text_out = block.output.astext()
-            text_out = text_out.replace('\\', '\\\\')
+            text_out = re.sub(r'\\(\S)', r'\\\\\1', text_out)
             text_out = text_out.replace('"""', '\\"""').strip()
             if 'dotted' in block.classes:
                 f.write(u'    expected = rsttst.core.Dotted(u"""{0}""")\n'.format(text_out))
                 f.write(u'    cmp(output, expected)\n')
-                f.write(u'    expected = str(expected)\n')
+                f.write(u'    expected = u"{0}".format(expected)\n')
                 f.write(u'    assert output == expected\n')
             else:
                 f.write(u'    assert output == u"""{0}"""\n'.format(text_out))
@@ -455,8 +489,9 @@ class Translator(nodes.NodeVisitor):
             self.blocks.append(self.current_block)
 
             title = self.current_title
-
-
+            self.titles[title] += 1
+            if 1 < self.titles[title]:
+                title = '{0}__{1}'.format(title, self.titles[title])
             self.current_block.title = title
         else:
             self.current_block.classes = node.attributes['classes']
@@ -639,9 +674,6 @@ class Translator(nodes.NodeVisitor):
 
     def visit_title(self, node):
         title = pythonify_title(node.astext())
-        self.titles[title] += 1
-        if 1 < self.titles[title]:
-            title = '{0}__{1}'.format(title, self.titles[title])
         self.current_title = title
 
     def depart_title(self, node):
