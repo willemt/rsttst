@@ -645,6 +645,9 @@ class Translator(nodes.NodeVisitor):
     def visit_target(self, node):
         pass
 
+    def depart_target(self, node):
+        pass
+
     def visit_tbody(self, node):
         pass
 
