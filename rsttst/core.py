@@ -104,7 +104,7 @@ def pythonify_title(title):
 
 
 def run(cmd):
-    return subprocess.check_output(cmd, shell=True).decode('utf-8').strip().replace(r'\\r','')
+    return subprocess.check_output(cmd, shell=True).decode('utf-8').strip().replace(r'\r', '')
 
 
 class RstTstWriter(writers.Writer):
