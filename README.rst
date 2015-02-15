@@ -77,17 +77,14 @@ Here's how we generate the Python test code:
 .. code-block:: bash
 
    rsttst README.rst
-   cat test_readme.py | head -n 31
+   cat test_readme.py | head -n 28
 
 The resulting test code looks like the following:
 
 .. code-block:: bash
 
    # -*- coding: utf-8 -*-
-   import subprocess, rsttst.core
-   
-   def run(cmd):
-       return subprocess.check_output(cmd, shell=True).decode('utf-8').strip()
+   from rsttst.core import run, Dotted
    
    def test_2_plus_2_equals_4():
        output = run(u"""echo '2 + 2' | bc""")
@@ -96,7 +93,7 @@ The resulting test code looks like the following:
    def test_dotted_notation():
        output = run(u"""echo Date: $(date)
    echo '\\ok'""")
-       expected = rsttst.core.Dotted(u"""Date: ............................
+       expected = Dotted(u"""Date: ............................
    \\ok""")
        cmp(output, expected)
        expected = u"{0}".format(expected)
@@ -105,7 +102,7 @@ The resulting test code looks like the following:
    def test_dotted_notation__2():
        output = run(u"""echo '<NZ>'
    echo $(date "+DATE: %Y-%m-%d%nTIME: %H:%M:%S")""")
-       expected = rsttst.core.Dotted(u"""<...>
+       expected = Dotted(u"""<...>
    DATE: ... TIME: ...""")
        cmp(output, expected)
        expected = u"{0}".format(expected)
@@ -113,7 +110,7 @@ The resulting test code looks like the following:
    
    def test_generating_tests():
        output = run(u"""rsttst README.rst
-   cat test_readme.py | head -n 31""")
+   cat test_readme.py | head -n 28""")
 
 Running the tests
 =================

@@ -8,6 +8,7 @@ from docutils import nodes, writers
 from docutils.core import publish_cmdline, default_description
 import codecs
 import collections
+import subprocess
 
 try:
     locale.setlocale(locale.LC_ALL, '')
@@ -102,6 +103,10 @@ def pythonify_title(title):
     return ''.join(e for e in title if e.isalnum() or e == '_').lower()
 
 
+def run(cmd):
+    return subprocess.check_output(cmd, shell=True).decode('utf-8').strip().replace(r'\\r','')
+
+
 class RstTstWriter(writers.Writer):
     supported = ('manpage',)
     """Formats this writer supports."""
@@ -121,10 +126,7 @@ class RstTstWriter(writers.Writer):
         filename = 'test_{0}.py'.format(self.document.settings._source.lower().replace('.rst', ''))
         f = codecs.open(filename, 'w', 'utf-8')
         f.write(u"""# -*- coding: utf-8 -*-
-import subprocess, rsttst.core
-
-def run(cmd):
-    return subprocess.check_output(cmd, shell=True).decode('utf-8').strip()
+from rsttst.core import run, Dotted
 
 """)
         for i, block in enumerate(visitor.blocks):
@@ -139,7 +141,7 @@ def run(cmd):
             text_out = re.sub(r'\\(\S)', r'\\\\\1', text_out)
             text_out = text_out.replace('"""', '\\"""').strip()
             if 'dotted' in block.classes:
-                f.write(u'    expected = rsttst.core.Dotted(u"""{0}""")\n'.format(text_out))
+                f.write(u'    expected = Dotted(u"""{0}""")\n'.format(text_out))
                 f.write(u'    cmp(output, expected)\n')
                 f.write(u'    expected = u"{0}".format(expected)\n')
                 f.write(u'    assert output == expected\n')
