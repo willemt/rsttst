@@ -112,6 +112,20 @@ The resulting test code looks like the following:
        output = run(u"""rsttst README.rst
    cat test_readme.py | head -n 28""")
 
+Windows new lines
+=================
+
+^M characters are automatically removed.
+
+.. code-block:: bash
+
+   printf 'supports\012\015windows new lines'
+
+.. code-block:: bash
+
+   supports
+   windows new lines
+
 Running the tests
 =================
 
@@ -128,9 +142,9 @@ Note: we had to exclude 'test_running_the_tests', otherwise it's turtles all the
 
    ============================= test session starts ==============================
    platform ...
-   collected 5 items
+   collected 6 items
            
-   test_readme.py ....
+   test_readme.py .....
            
    ============= 1 tests deselected by '-knot test_running_the_tests' =============
 
