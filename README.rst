@@ -11,6 +11,8 @@ rsttst makes your reStructuredText documentation testable.
 
 In fact, this README file is testable and is used to test rsttst.
 
+If your tests document how your system works, why not formally combine your tests and documentation into one?
+
 Below is an example:
 
 2 + 2 = 4
