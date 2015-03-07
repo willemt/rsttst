@@ -130,6 +130,8 @@ from rsttst.core import run, Dotted
 
 """)
         for i, block in enumerate(visitor.blocks):
+            if 'ignore' in block.classes:
+                continue
             title = i
             if hasattr(block, 'title'):
                 title = block.title
@@ -488,6 +490,7 @@ class Translator(nodes.NodeVisitor):
         if not self.current_block:
             self.current_block = Block()
             self.current_block.input = node
+            self.current_block.classes = set(node.attributes['classes'])
             self.blocks.append(self.current_block)
 
             title = self.current_title
@@ -495,8 +498,11 @@ class Translator(nodes.NodeVisitor):
             if 1 < self.titles[title]:
                 title = '{0}__{1}'.format(title, self.titles[title])
             self.current_block.title = title
+
+            if 'ignore' in self.current_block.classes:
+                self.current_block = None
         else:
-            self.current_block.classes = node.attributes['classes']
+            self.current_block.classes |= set(node.attributes['classes'])
             self.current_block.output = node
             self.current_block = None
 

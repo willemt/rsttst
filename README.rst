@@ -126,6 +126,19 @@ Windows new lines
    supports
    windows new lines
 
+Ignore code-blocks
+==================
+
+Sometimes you want to use a code-block without it being tested by rsttst.
+
+You can use the ":class: ignore" directive to ignore this code-block:
+
+.. code-block:: bash
+   :class: ignore
+
+   .. code-block:: bash
+      :class: ignore
+
 Running the tests
 =================
 
