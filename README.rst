@@ -1,15 +1,20 @@
+.. image:: https://img.shields.io/badge/rsttst-testable-brightgreen.svg
+   :target: https://github.com/willemt/rsttst
+
 .. image:: https://travis-ci.org/willemt/rsttst.png
    :target: https://travis-ci.org/willemt/rsttst
 
 .. image:: https://pypip.in/version/rsttst/badge.svg
-    :target: https://pypi.python.org/pypi/rsttst
-    
+   :target: https://pypi.python.org/pypi/rsttst
+ 
 .. image:: https://pypip.in/download/rsttst/badge.svg
-    :target: https://pypi.python.org/pypi/rsttst
+   :target: https://pypi.python.org/pypi/rsttst
 
 rsttst makes your reStructuredText documentation testable.
 
 In fact, this README file is testable and is used to test rsttst.
+
+If your tests document how your system works, why not formally combine your tests and documentation into one?
 
 Below is an example:
 
