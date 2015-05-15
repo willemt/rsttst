@@ -11,7 +11,7 @@ def long_description():
 
 setup(
     name='rsttst',
-    version='0.2.0',
+    version='0.2.1',
 
     description='rsttst makes your reStructuredText testable',
     long_description=long_description(),

@@ -67,7 +67,7 @@ class Dotted(object):
                 lines.append(u"".join(dotcompare(a, b)))
             else:
                 lines.append(a)
-        self.s = u"\n".join(lines)
+        self.s = u"\n".join(filter(lambda x: x is not None, lines))
         return cmp(self.s, b)
 
     def __cmp__(self, other):
@@ -104,7 +104,7 @@ def pythonify_title(title):
 
 
 def run(cmd):
-    return subprocess.check_output(cmd, shell=True).decode('utf-8').strip().replace('\r', '')
+    return subprocess.check_output(cmd, shell=True, executable='/bin/bash').decode('utf-8').strip().replace('\r', '')
 
 
 class RstTstWriter(writers.Writer):
