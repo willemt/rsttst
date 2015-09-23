@@ -105,7 +105,7 @@ def pythonify_title(title):
 
 def run(cmd):
     try:
-        output = subprocess.check_output(cmd, shell=True, executable='/bin/bash')
+        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True, executable='/bin/bash')
     except subprocess.CalledProcessError as e:
         output = e.output
 
