@@ -104,7 +104,13 @@ def pythonify_title(title):
 
 
 def run(cmd):
-    return subprocess.check_output(cmd, shell=True, executable='/bin/bash').decode('utf-8').strip().replace('\r', '')
+    try:
+        output = subprocess.check_output(cmd, shell=True, executable='/bin/bash')
+    except subprocess.CalledProcessError as e:
+        output = e.output
+
+    output = output.decode('utf-8').strip().replace('\r', '')
+    return output.replace('\t', ' ' * 4)
 
 
 class RstTstWriter(writers.Writer):
